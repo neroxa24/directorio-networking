@@ -43,6 +43,8 @@
   .red-row input[type=text] { padding:8px 10px; }
   .red-row input:disabled { background:#f2f2f2; color:#999; }
   @media (max-width:480px) { .red-row { grid-template-columns: 1fr; } }
+  .tel-row { display:grid; grid-template-columns: minmax(150px, 1.3fr) 2fr; gap:10px; }
+  .tel-row select { padding:10px 8px; font:inherit; border:1px solid #ccc; border-radius:6px; background:#fff; color:var(--ink); }
 
   /* Vista de impresión / PDF */
   #print-area { display:none; }
@@ -82,15 +84,21 @@
 
     <div class="field" data-key="telefono">
       <label for="telefono">Teléfono de contacto<span class="req">*</span></label>
-      <div class="hint">Con código de país, ej: +54 11 1234-5678</div>
-      <input type="tel" id="telefono">
+      <div class="hint">Elegí el país y escribí el número sin el 0 ni el 15.</div>
+      <div class="tel-row">
+        <select id="pais-tel" aria-label="Código de país"></select>
+        <input type="tel" id="telefono" placeholder="11 1234-5678">
+      </div>
       <div class="error">Ingresá un teléfono válido (mínimo 8 dígitos).</div>
     </div>
 
     <div class="field" data-key="whatsapp">
       <label for="whatsapp">Número de WhatsApp<span class="req">*</span></label>
       <div class="hint">Si es el mismo que el anterior, escribilo igual.</div>
-      <input type="tel" id="whatsapp">
+      <div class="tel-row">
+        <select id="pais-wsp" aria-label="Código de país"></select>
+        <input type="tel" id="whatsapp" placeholder="11 1234-5678">
+      </div>
       <div class="error">Ingresá un número de WhatsApp válido (mínimo 8 dígitos).</div>
     </div>
 
@@ -113,7 +121,7 @@
     </div>
 
     <div class="field" data-key="redes">
-      <label for="redes">Redes profesionales</label>
+      <label for="redes">Redes</label>
       <div class="hint">LinkedIn, Instagram, web o cualquier otra red que quieras compartir.</div>
       <div class="redes-list">
         <div class="red-row"><label class="check"><input type="checkbox" data-red="LinkedIn"><span>LinkedIn</span></label><input type="text" placeholder="usuario o URL" disabled></div>
@@ -228,6 +236,26 @@
   };
   const requeridos = ["nombre","telefono","whatsapp","email","profesion","area"];
 
+  const PAISES = [
+    ["🇦🇷","Argentina","54"],["🇺🇾","Uruguay","598"],["🇵🇾","Paraguay","595"],["🇧🇴","Bolivia","591"],
+    ["🇨🇱","Chile","56"],["🇧🇷","Brasil","55"],["🇵🇪","Perú","51"],["🇨🇴","Colombia","57"],
+    ["🇻🇪","Venezuela","58"],["🇪🇨","Ecuador","593"],["🇲🇽","México","52"],["🇺🇸","Estados Unidos","1"],
+    ["🇪🇸","España","34"],["🇮🇹","Italia","39"],["🇫🇷","Francia","33"],["🇩🇪","Alemania","49"],["🇬🇧","Reino Unido","44"]
+  ];
+  ["pais-tel","pais-wsp"].forEach(id => {
+    const sel = $(id);
+    PAISES.forEach(([bandera, nombre, codigo]) => {
+      const o = document.createElement("option");
+      o.value = codigo;
+      o.textContent = `${bandera} ${nombre} (+${codigo})`;
+      sel.appendChild(o);
+    });
+  });
+  function telCompleto(selId, numId){
+    const num = $(numId).value.trim();
+    return num ? `+${$(selId).value} ${num}` : "—";
+  }
+
   function valor(id){ return $(id).value.trim(); }
   function soloDigitos(s){ return (s.match(/\d/g) || []).length; }
 
@@ -255,6 +283,8 @@
     const d = {};
     campos.forEach(c => d[etiquetas[c]] = valor(c));
     d["Redes profesionales"] = redesTexto();
+    d[etiquetas.telefono] = telCompleto("pais-tel", "telefono");
+    d[etiquetas.whatsapp] = telCompleto("pais-wsp", "whatsapp");
     d["Autoriza compartir datos"] = $("autorizo").checked ? "Sí" : "No";
     d["Fecha de envío"] = new Date().toLocaleString("es-AR");
     return d;
