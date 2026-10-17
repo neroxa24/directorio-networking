@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directorio de networking – Posgrado</title>
+<style>
+  :root { --bg:#F5F5F5; --card:#ffffff; --ink:#0D0D0D; --gold:#C9A84C; --gold2:#E8C96A; --muted:#666; --err:#b00020; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "DejaVu Sans", "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--ink); line-height:1.45; }
+  header { background:var(--ink); color:#fff; padding:22px 20px; border-bottom:4px solid var(--gold); }
+  header h1 { margin:0; font-size:1.35rem; }
+  header p { margin:6px 0 0; color:var(--gold2); font-size:.92rem; }
+  main { max-width:680px; margin:24px auto; padding:0 16px 48px; }
+  .intro { background:var(--card); border-left:4px solid var(--gold); padding:14px 16px; border-radius:6px; font-size:.95rem; color:#333; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+  form { margin-top:20px; }
+  .field { background:var(--card); padding:16px; border-radius:8px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+  label { display:block; font-weight:600; margin-bottom:6px; }
+  .req { color:var(--err); margin-left:2px; }
+  .hint { font-size:.82rem; color:var(--muted); margin:-2px 0 8px; }
+  input[type=text], input[type=email], input[type=tel], select, textarea {
+    width:100%; padding:10px 12px; font:inherit; border:1px solid #ccc; border-radius:6px; background:#fff; color:var(--ink);
+  }
+  input:focus, select:focus, textarea:focus { outline:2px solid var(--gold); border-color:var(--gold); }
+  textarea { min-height:80px; resize:vertical; }
+  .check { display:flex; gap:10px; align-items:flex-start; font-weight:400; }
+  .check input { margin-top:4px; width:18px; height:18px; accent-color:var(--gold); }
+  .error { color:var(--err); font-size:.85rem; margin-top:6px; display:none; }
+  .field.invalid .error { display:block; }
+  .field.invalid input, .field.invalid select, .field.invalid textarea { border-color:var(--err); }
+  .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+  button { font:inherit; font-weight:600; padding:12px 18px; border-radius:6px; border:0; cursor:pointer; }
+  .btn-main { background:var(--ink); color:var(--gold2); flex:1 1 220px; }
+  .btn-main:hover { background:#222; }
+  .btn-alt { background:var(--gold); color:var(--ink); flex:1 1 180px; }
+  .btn-alt:hover { background:var(--gold2); }
+  .btn-clear { background:transparent; color:var(--muted); border:1px solid #ccc; }
+  .status { margin-top:14px; font-size:.92rem; color:#333; }
+  .ok { color:#1b6e2a; font-weight:600; }
+  .redes-list { display:flex; flex-direction:column; gap:8px; }
+  .red-row { display:grid; grid-template-columns: minmax(130px, 1fr) 2fr; gap:10px; align-items:center; }
+  .red-row .check { margin:0; font-weight:500; }
+  .red-row input[type=text] { padding:8px 10px; }
+  .red-row input:disabled { background:#f2f2f2; color:#999; }
+  @media (max-width:480px) { .red-row { grid-template-columns: 1fr; } }
+  .tel-row { display:grid; grid-template-columns: minmax(150px, 1.3fr) 2fr; gap:10px; }
+  .tel-row select { padding:10px 8px; font:inherit; border:1px solid #ccc; border-radius:6px; background:#fff; color:var(--ink); }
+
+  /* Vista de impresión / PDF */
+  #print-area { display:none; }
+  @media print {
+    body * { visibility:hidden; }
+    #print-area, #print-area * { visibility:visible; }
+    #print-area { display:block; position:absolute; left:0; top:0; width:100%; padding:24px; color:#000; background:#fff; }
+    #print-area h2 { font-size:16pt; margin:0 0 4px; border-bottom:2px solid var(--gold); padding-bottom:6px; }
+    #print-area p.sub { margin:0 0 18px; color:#444; font-size:10pt; }
+    #print-area table { width:100%; border-collapse:collapse; font-size:11pt; }
+    #print-area td { border:1px solid #bbb; padding:8px 10px; vertical-align:top; }
+    #print-area td.k { width:34%; background:#f3f3f3; font-weight:700; }
+    #print-area .foot { margin-top:18px; font-size:9pt; color:#555; }
+    header, main { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Directorio de networking – Posgrado</h1>
+  <p>Completá tus datos. Al final podés descargar tu ficha en PDF y enviarla.</p>
+</header>
+
+<main>
+  <div id="ok-box" style="display:none; background:#1b6e2a; color:#fff; padding:24px 20px; border-radius:8px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,.15); margin-bottom:16px;">
+    <div style="font-size:2rem;">✅</div>
+    <h2 style="margin:8px 0 6px; font-size:1.3rem;">¡Datos enviados!</h2>
+    <p style="margin:0; font-size:1rem;">Gracias por completar el formulario. Tu información ya quedó registrada, no hace falta volver a enviarla.</p>
+  </div>
+  <div class="intro">
+    Esta información se usará únicamente para armar un directorio de contacto entre integrantes del posgrado, con fines de networking. Completá los datos que quieras. No hay campos obligatorios.
+  </div>
+
+  <form id="f" novalidate>
+
+    <div class="field" data-key="nombre">
+      <label for="nombre">Nombre y apellido completo</label>
+      <input type="text" id="nombre" autocomplete="name">
+      <div class="error">Ingresá tu nombre y apellido.</div>
+    </div>
+
+    <div class="field" data-key="telefono">
+      <label for="telefono">Teléfono de contacto</label>
+      <div class="hint">Elegí el país y escribí el número sin el 0 ni el 15.</div>
+      <div class="tel-row">
+        <select id="pais-tel" aria-label="Código de país"></select>
+        <input type="tel" id="telefono" placeholder="11 1234-5678">
+      </div>
+      <div class="error">Ingresá un teléfono válido (mínimo 8 dígitos).</div>
+    </div>
+
+    <div class="field" data-key="whatsapp">
+      <label for="whatsapp">Número de WhatsApp</label>
+      <div class="hint">Si es el mismo que el anterior, escribilo igual.</div>
+      <div class="tel-row">
+        <select id="pais-wsp" aria-label="Código de país"></select>
+        <input type="tel" id="whatsapp" placeholder="11 1234-5678">
+      </div>
+      <div class="error">Ingresá un número de WhatsApp válido (mínimo 8 dígitos).</div>
+    </div>
+
+    <div class="field" data-key="email">
+      <label for="email">Correo electrónico</label>
+      <input type="email" id="email" autocomplete="email">
+      <div class="error">Ingresá un correo electrónico válido.</div>
+    </div>
+
+    <div class="field" data-key="profesion">
+      <label for="profesion">Profesión / ocupación actual</label>
+      <div class="hint">Ej: Abogado/a en litigio civil, Docente universitario, Consultor en IA</div>
+      <input type="text" id="profesion">
+      <div class="error">Completá tu profesión u ocupación.</div>
+    </div>
+
+    <div class="field" data-key="residencia">
+      <label for="residencia">Ciudad / provincia de residencia</label>
+      <input type="text" id="residencia">
+    </div>
+
+    <div class="field" data-key="redes">
+      <label for="redes">Redes</label>
+      <div class="hint">LinkedIn, Instagram, web o cualquier otra red que quieras compartir.</div>
+      <div class="redes-list">
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="LinkedIn"><span>LinkedIn</span></label><input type="text" placeholder="usuario o URL" disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="Instagram"><span>Instagram</span></label><input type="text" placeholder="@usuario" disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="Facebook"><span>Facebook</span></label><input type="text" placeholder="usuario o URL" disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="X (Twitter)"><span>X (Twitter)</span></label><input type="text" placeholder="@usuario" disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="TikTok"><span>TikTok</span></label><input type="text" placeholder="@usuario" disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="YouTube"><span>YouTube</span></label><input type="text" placeholder="canal o URL" disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="Threads"><span>Threads</span></label><input type="text" placeholder="@usuario" disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="GitHub"><span>GitHub</span></label><input type="text" placeholder="usuario o URL" disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="Sitio web"><span>Sitio web</span></label><input type="text" placeholder="https://..." disabled></div>
+        <div class="red-row"><label class="check"><input type="checkbox" data-red="Otra"><span>Otra</span></label><input type="text" placeholder="nombre de la red y usuario o URL" disabled></div>
+      </div>
+    </div>
+
+    <div class="field" data-key="area">
+      <label for="area">Área de interés principal</label>
+      <select id="area">
+        <option value="">Seleccioná una opción</option>
+        <option>Derecho Civil</option>
+        <option>Derecho Comercial y Societario</option>
+        <option>Derecho Bancario y Financiero</option>
+        <option>Derecho del Consumidor</option>
+        <option>Derecho Laboral y de la Seguridad Social</option>
+        <option>Derecho Previsional</option>
+        <option>Derecho de Familia</option>
+        <option>Derecho Sucesorio</option>
+        <option>Derecho Penal</option>
+        <option>Derecho Penal Económico</option>
+        <option>Derecho Procesal Civil y Comercial</option>
+        <option>Derecho Procesal Penal</option>
+        <option>Derecho Constitucional</option>
+        <option>Derecho Administrativo</option>
+        <option>Derecho Tributario</option>
+        <option>Derecho Aduanero</option>
+        <option>Derecho Inmobiliario y Urbanístico</option>
+        <option>Derecho Registral y Notarial</option>
+        <option>Derecho Ambiental</option>
+        <option>Derecho Minero y Energético</option>
+        <option>Derecho Agrario</option>
+        <option>Derecho Internacional Público</option>
+        <option>Derecho Internacional Privado</option>
+        <option>Derecho Migratorio</option>
+        <option>Derechos Humanos</option>
+        <option>Derecho de la Propiedad Intelectual</option>
+        <option>Derecho Informático y Tecnológico</option>
+        <option>Protección de Datos Personales</option>
+        <option>Inteligencia Artificial y Derecho</option>
+        <option>Compliance y Anticorrupción</option>
+        <option>Derecho de la Salud</option>
+        <option>Derecho Deportivo</option>
+        <option>Mediación y Métodos Alternativos de Resolución de Conflictos</option>
+        <option>Otra (especificar abajo)</option>
+      </select>
+      <div class="error">Elegí un área de interés.</div>
+    </div>
+
+    <div class="field" data-key="otra_area">
+      <label for="otra_area">Si elegiste "Otra", ¿cuál?</label>
+      <input type="text" id="otra_area">
+    </div>
+
+    <div class="field" data-key="ofrece">
+      <label for="ofrece">¿Qué podés ofrecer al grupo?</label>
+      <div class="hint">Servicios, experiencia, conocimientos, colaboraciones.</div>
+      <textarea id="ofrece"></textarea>
+    </div>
+
+    <div class="field" data-key="autorizo">
+      <label class="check">
+        <input type="checkbox" id="autorizo">
+        <span>Autorizo a compartir mis datos de contacto con los integrantes del posgrado, con fines de networking.</span>
+      </label>
+      <div class="error">Necesitamos tu autorización para armar el directorio.</div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-main" id="btn-enviar">Enviar</button>
+    </div>
+    <div class="status" id="status"></div>
+  </form>
+</main>
+
+<div id="print-area"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const campos = ["nombre","telefono","whatsapp","email","profesion","residencia","area","otra_area","ofrece"];
+
+  // Redes: cada checkbox habilita su campo de usuario/URL
+  document.querySelectorAll(".red-row").forEach(row => {
+    const cb = row.querySelector("input[type=checkbox]");
+    const txt = row.querySelector("input[type=text]");
+    cb.addEventListener("change", () => {
+      txt.disabled = !cb.checked;
+      if (cb.checked) txt.focus(); else txt.value = "";
+    });
+  });
+  function redesTexto(){
+    const items = [];
+    document.querySelectorAll(".red-row").forEach(row => {
+      const cb = row.querySelector("input[type=checkbox]");
+      const txt = row.querySelector("input[type=text]").value.trim();
+      if (cb.checked) items.push(cb.dataset.red + (txt ? ": " + txt : " (sin usuario indicado)"));
+    });
+    return items.length ? items.join(" | ") : "—";
+  }
+  const etiquetas = {
+    nombre:"Nombre y apellido", telefono:"Teléfono", whatsapp:"WhatsApp", email:"Correo electrónico",
+    profesion:"Profesión / ocupación", residencia:"Ciudad / provincia", redes:"Redes profesionales",
+    area:"Área de interés", otra_area:"Otra área", ofrece:"Puede ofrecer al grupo"
+  };
+  const requeridos = ["nombre","telefono","whatsapp","email","profesion","area"];
+
+  const PAISES = [
+    ["🇦🇷","Argentina","54"],["🇺🇾","Uruguay","598"],["🇵🇾","Paraguay","595"],["🇧🇴","Bolivia","591"],
+    ["🇨🇱","Chile","56"],["🇧🇷","Brasil","55"],["🇵🇪","Perú","51"],["🇨🇴","Colombia","57"],
+    ["🇻🇪","Venezuela","58"],["🇪🇨","Ecuador","593"],["🇲🇽","México","52"],["🇺🇸","Estados Unidos","1"],
+    ["🇪🇸","España","34"],["🇮🇹","Italia","39"],["🇫🇷","Francia","33"],["🇩🇪","Alemania","49"],["🇬🇧","Reino Unido","44"]
+  ];
+  ["pais-tel","pais-wsp"].forEach(id => {
+    const sel = $(id);
+    PAISES.forEach(([bandera, nombre, codigo]) => {
+      const o = document.createElement("option");
+      o.value = codigo;
+      o.textContent = `${bandera} ${nombre} (+${codigo})`;
+      sel.appendChild(o);
+    });
+  });
+  function telCompleto(selId, numId){
+    const num = $(numId).value.trim();
+    return num ? `+${$(selId).value} ${num}` : "—";
+  }
+
+  function valor(id){ return $(id).value.trim(); }
+  function soloDigitos(s){ return (s.match(/\d/g) || []).length; }
+
+  function validar(){
+    let ok = true;
+    document.querySelectorAll(".field").forEach(f => f.classList.remove("invalid"));
+    const marcar = key => { document.querySelector(`[data-key="${key}"]`).classList.add("invalid"); ok = false; };
+
+    // Sin campos obligatorios: cada persona completa lo que quiera.
+    if (valor("email") && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor("email"))) marcar("email");
+
+    if (ok) return true;
+    const primero = document.querySelector(".field.invalid");
+    if (primero) primero.scrollIntoView({behavior:"smooth", block:"center"});
+    $("status").innerHTML = '<span style="color:var(--err)">Revisá los campos marcados en rojo.</span>';
+    return false;
+  }
+
+  function datos(){
+    const d = {};
+    campos.forEach(c => d[etiquetas[c]] = valor(c));
+    d["Redes profesionales"] = redesTexto();
+    d[etiquetas.telefono] = telCompleto("pais-tel", "telefono");
+    d[etiquetas.whatsapp] = telCompleto("pais-wsp", "whatsapp");
+    d["Autoriza compartir datos"] = $("autorizo").checked ? "Sí" : "No";
+    d["Fecha de envío"] = new Date().toLocaleString("es-AR");
+    return d;
+  }
+
+  function escapar(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+  // URL de la aplicación web de Apps Script (planilla del directorio)
+  const URL_DIRECTORIO = "https://script.google.com/macros/s/AKfycbyrxjZ1eueN0NN2QjoV7WK-n1OYeyF_rNIRimrI70jeSaLP1NdfYhyJvpHbaQ1ahzwG/exec";
+
+  $("btn-enviar").addEventListener("click", async () => {
+    if (!validar()) return;
+    const btn = $("btn-enviar");
+    btn.disabled = true;
+    $("status").textContent = "Enviando...";
+    try {
+      // no-cors: Apps Script no devuelve encabezados CORS, así que la respuesta no se puede leer.
+      // El envío llega igual a la planilla; se verifica revisando la planilla.
+      await fetch(URL_DIRECTORIO, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(datos())
+      });
+      $("f").style.display = "none";
+      $("ok-box").style.display = "block";
+      $("status").textContent = "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error(err);
+      $("status").innerHTML = '<span style="color:var(--err)">No se pudo enviar. Revisá la conexión e intentá de nuevo. Si sigue fallando, avisá al organizador.</span>';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+</script>
+</body>
+</html>
