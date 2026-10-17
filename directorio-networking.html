@@ -66,7 +66,7 @@
 
 <header>
   <h1>Directorio de networking – Posgrado</h1>
-  <p>Completá tus datos. Al final podés descargar tu ficha en PDF y enviarla.</p>
+  <p>Completá los datos que quieras y tocá Enviar. No hay campos obligatorios.</p>
 </header>
 
 <main>
@@ -76,7 +76,7 @@
     <p style="margin:0 0 10px; font-size:1rem;">Gracias por completar el formulario. Tu información ya quedó registrada.</p>
     <p style="margin:0; font-size:1rem; font-style:italic;">Ahora sos parte de una red profesional. Cada conexión abre una puerta nueva: compartamos lo que sabemos y crezcamos juntos.</p>
   </div>
-  <div class="intro">
+  <div class="intro" id="intro">
     Esta información se usará únicamente para armar un directorio de contacto entre integrantes del posgrado, con fines de networking. Completá los datos que quieras. No hay campos obligatorios.
   </div>
 
@@ -311,6 +311,7 @@
         body: JSON.stringify(datos())
       });
       $("f").style.display = "none";
+      $("intro").style.display = "none";
       $("ok-box").style.display = "block";
       $("status").textContent = "";
       window.scrollTo({ top: 0, behavior: "smooth" });
